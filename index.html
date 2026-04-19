@@ -1,14 +1,86 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 로또 예측기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+
+    <button onclick="toggleTheme()" class="theme-toggle" aria-label="Toggle Theme">
+        <svg class="sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg class="moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    </button>
+
+    <div class="app-container">
+        <header class="header">
+            <h1>AI 로또 예측기</h1>
+            <p>Neural Network Probability Engine</p>
+        </header>
+
+        <main class="card">
+            <div id="loader" class="loader-overlay hidden">
+                <div class="scanning-line"></div>
+                <div class="spinner"></div>
+                <p class="loading-text">패턴 분석 엔진 가동 중...</p>
+            </div>
+
+            <div id="result-container" class="result-display" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                <div style="text-align: center; color: var(--text-slate-400);">
+                    <svg style="width: 3rem; height: 3rem; margin-bottom: 1rem; opacity: 0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    <p style="font-size: 0.875rem;">최근 200회차 당첨 빈도 및 가중치 분석 준비 완료.</p>
+                    <p style="font-size: 0.875rem; font-weight: 700; color: var(--blue-500);">AI 예측을 시작해 보세요.</p>
+                </div>
+            </div>
+
+            <button id="generate-btn" onclick="startAnalysis()" class="btn-generate">
+                <span>분석 및 번호 생성</span>
+                <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+            </button>
+        </main>
+
+        <section class="card card-contact">
+            <h2 class="mb-4" style="font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg style="width: 1.25rem; height: 1.25rem; color: var(--indigo-500);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                제휴 문의하기
+            </h2>
+
+            <form id="contact-form" action="https://formspree.io/f/xykljnko" method="POST" class="contact-form">
+                <div class="form-group-row">
+                    <div class="input-wrapper">
+                        <input type="text" name="name" placeholder="성함/업체명" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="email" name="_replyto" placeholder="이메일 주소" required>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <textarea name="message" placeholder="제휴 제안 내용을 입력해주세요." rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">문의 내용 보내기</button>
+            </form>
+
+            <div id="form-status" class="loader-overlay hidden" style="border-radius: 2.5rem;">
+                <div style="width: 3rem; height: 3rem; background-color: rgba(74, 222, 128, 0.2); color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                    <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h3 style="font-size: 1.125rem; margin-bottom: 0.25rem;">문의가 전송되었습니다!</h3>
+                <p style="font-size: 0.875rem; color: var(--text-slate-500); margin-bottom: 1rem;">확인 후 빠르게 연락드리겠습니다.</p>
+                <button onclick="resetForm()" style="font-size: 0.75rem; color: var(--indigo-500); font-weight: 700; text-decoration: underline;">다시 보내기</button>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div>Dataset: Draws 1001-1219 Analyzed</div>
+            <div>AI Deep Learning Algorithm V3.0</div>
+        </footer>
+    </div>
+
+    <script src="main.js"></script>
 </body>
 </html>
+
