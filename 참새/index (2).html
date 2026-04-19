@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 로또 예측기</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind dark mode configuration
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <style>
-        /* Noto Sans KR과 함께 제목용으로 사용할 폰트 정의 */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
         
-        /* 다음체(Daum)와 유사한 느낌의 고딕체 및 시스템 폰트 설정 (기울임 제거를 위해 normal 강제) */
         @font-face {
             font-family: 'Daum';
             src: local('Daum'), local('Apple SD Gothic Neo'), local('Malgun Gothic'), sans-serif;
@@ -18,26 +22,26 @@
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         .font-daum {
             font-family: 'Daum', 'Noto Sans KR', sans-serif;
-            letter-spacing: -0.02em; /* 정자체에 맞춰 자간 미세 조정 */
-            font-style: normal !important; /* 기울임 완전 제거 */
+            letter-spacing: -0.02em;
+            font-style: normal !important;
         }
 
         .lotto-ball {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
+            font-size: 0.95rem;
+            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.25);
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
@@ -48,73 +52,101 @@
         .ball-41 { background: radial-gradient(circle at 30% 30%, #4ade80, #16a34a); }
 
         .game-row {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.5s ease-out forwards;
             opacity: 0;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .dark body { background-color: #0f172a; color: #f1f5f9; }
-        .dark .card { background-color: #1e293b; border-color: #334155; }
-        .dark .game-item { background-color: #1e293b; border-color: #334155; }
-        .dark .stats-bg { background-color: #334155; }
-        .stats-bg { background-color: #f1f5f9; }
-
         .scanning-line {
-            height: 2px;
+            height: 3px;
             background: linear-gradient(90deg, transparent, #3b82f6, transparent);
             width: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            animation: scan 1.5s infinite;
+            animation: scan 2s infinite ease-in-out;
         }
 
         @keyframes scan {
-            0% { top: 0%; }
-            100% { top: 100%; }
+            0% { top: 0%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Smooth transitions for theme switching */
+        .theme-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col items-center py-10 px-4">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col items-center py-10 px-4">
 
-    <!-- 테마 토글 버튼 -->
-    <button onclick="toggleTheme()" class="fixed top-5 right-5 p-3 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 transition-all hover:scale-110 active:scale-95 z-50">
-        <span id="theme-icon-light" class="block dark:hidden">🌙</span>
-        <span id="theme-icon-dark" class="hidden dark:block">☀️</span>
+    <!-- Theme Toggle Floating Button -->
+    <button onclick="toggleTheme()" class="fixed top-6 right-6 p-3.5 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 transition-all hover:scale-110 active:scale-90 z-50 group">
+        <div id="theme-icon-container" class="relative w-6 h-6">
+            <!-- Moon Icon -->
+            <svg id="moon-icon" class="absolute inset-0 w-6 h-6 text-indigo-600 transition-all duration-500 transform dark:rotate-90 dark:opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+            <!-- Sun Icon -->
+            <svg id="sun-icon" class="absolute inset-0 w-6 h-6 text-yellow-400 transition-all duration-500 transform -rotate-90 opacity-0 dark:rotate-0 dark:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+        </div>
     </button>
 
-    <div class="max-w-md w-full space-y-6 mt-4">
+    <div class="max-w-md w-full space-y-8 mt-4">
         <header class="text-center">
-            <!-- 제목: italic 제거 및 정자체 스타일 적용 -->
-            <h1 class="text-5xl font-extrabold tracking-tight mb-2 text-blue-600 dark:text-blue-400 font-daum">AI 로또 예측기</h1>
-            <p class="text-[10px] tracking-[0.3em] text-slate-400 font-bold uppercase">Deep Learning Probability Engine</p>
+            <h1 class="text-5xl font-extrabold tracking-tight mb-3 text-blue-600 dark:text-blue-400 font-daum drop-shadow-sm">AI 로또 예측기</h1>
+            <p class="text-[11px] tracking-[0.4em] text-slate-400 dark:text-slate-500 font-bold uppercase">Neural Network Probability Engine</p>
         </header>
 
-        <main class="card bg-white p-5 rounded-[2.5rem] shadow-2xl border border-slate-100 transition-colors relative overflow-hidden">
-            <div id="loader" class="hidden absolute inset-0 bg-white/80 dark:bg-slate-900/80 z-10 flex flex-col items-center justify-center">
+        <main class="card bg-white dark:bg-slate-900 p-6 rounded-[3rem] shadow-2xl shadow-blue-500/10 border border-slate-100 dark:border-slate-800 theme-transition relative overflow-hidden">
+            <!-- Loading Overlay -->
+            <div id="loader" class="hidden absolute inset-0 bg-white/90 dark:bg-slate-900/95 z-20 flex flex-col items-center justify-center backdrop-blur-sm">
                 <div class="scanning-line"></div>
-                <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                <p id="loading-text" class="text-sm font-bold text-blue-600 animate-pulse">데이터 스캔 중...</p>
+                <div class="relative w-20 h-20 mb-6">
+                    <div class="absolute inset-0 border-4 border-blue-100 dark:border-blue-900/30 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <p id="loading-text" class="text-base font-bold text-blue-600 dark:text-blue-400 animate-pulse">패턴 분석 엔진 가동 중...</p>
             </div>
 
-            <div id="result-container" class="space-y-4">
-                <div class="py-20 text-center text-slate-400 italic">
-                    최근 당첨 패턴 분석 준비 완료.<br>AI 예측을 시작하세요.
+            <!-- Result Area -->
+            <div id="result-container" class="space-y-5 min-h-[400px] flex flex-col justify-center">
+                <div class="text-center space-y-4 py-12">
+                    <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto">
+                        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-slate-400 dark:text-slate-500 text-sm leading-relaxed">
+                        최근 200회차 당첨 빈도 및 가중치 분석 준비 완료.<br>
+                        <span class="font-bold text-blue-500/80">AI 예측을 시작해 보세요.</span>
+                    </p>
                 </div>
             </div>
 
-            <button id="generate-btn" onclick="startAnalysis()" class="mt-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-5 rounded-2xl transition-all active:scale-[0.98] shadow-xl shadow-blue-500/20 text-lg">
-                분석 및 번호 생성
+            <!-- Action Button -->
+            <button id="generate-btn" onclick="startAnalysis()" class="mt-8 w-full bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-5 rounded-2xl transition-all active:scale-[0.97] shadow-xl shadow-blue-600/20 text-lg flex items-center justify-center gap-2 group">
+                <span>분석 및 번호 생성</span>
+                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
             </button>
         </main>
 
-        <footer class="text-center text-[10px] text-slate-400 opacity-70 leading-relaxed uppercase tracking-widest">
-            Dataset: Draws 1001-1219 Analyzed<br>
-            Weighted Probability Algorithm V2.5
+        <footer class="text-center space-y-2">
+            <div class="text-[10px] text-slate-400 dark:text-slate-600 font-medium uppercase tracking-[0.2em]">
+                Dataset: Draws 1001-1219 Analyzed
+            </div>
+            <div class="text-[10px] text-slate-300 dark:text-slate-700 uppercase tracking-widest">
+                AI Deep Learning Algorithm V3.0
+            </div>
         </footer>
     </div>
 
@@ -174,10 +206,16 @@
             btn.disabled = true;
             loader.classList.remove('hidden');
             
-            const steps = ["과거 패턴 스캔 중...", "가중치 데이터 로드 중...", "최적 조합 산출 중...", "확률 검증 중..."];
+            const steps = [
+                "과거 당첨 데이터 로딩 중...", 
+                "주차별 출현 빈도 가중치 계산...", 
+                "신경망 기반 번호 조합 생성...", 
+                "최종 당첨 확률 검증 중..."
+            ];
+            
             for(let step of steps) {
                 loadingText.innerText = step;
-                await new Promise(r => setTimeout(r, 600));
+                await new Promise(r => setTimeout(r, 650));
             }
 
             generateLottoGames();
@@ -194,20 +232,20 @@
                 const { main, bonus, finalPercent } = getWeightedNumbers();
                 
                 const gameDiv = document.createElement('div');
-                gameDiv.className = 'game-row flex flex-col gap-3 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 stats-bg transition-colors shadow-sm';
+                gameDiv.className = 'game-row flex flex-col gap-3 p-5 rounded-[1.75rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 theme-transition shadow-sm';
                 gameDiv.style.animationDelay = `${i * 0.1}s`;
 
                 const statsHeader = document.createElement('div');
                 statsHeader.className = 'flex justify-between items-center px-1';
                 statsHeader.innerHTML = `
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">AI Analysis Score</span>
+                    <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">AI Prediction Score</span>
                     <span class="text-xs font-black text-blue-600 dark:text-blue-400">${finalPercent}%</span>
                 `;
                 
                 const progressBarBg = document.createElement('div');
-                progressBarBg.className = 'w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden';
+                progressBarBg.className = 'w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden';
                 const progressBarFill = document.createElement('div');
-                progressBarFill.className = 'h-full bg-blue-500 rounded-full transition-all duration-1000';
+                progressBarFill.className = 'h-full bg-blue-500 rounded-full transition-all duration-1000 ease-out';
                 progressBarFill.style.width = '0%';
                 setTimeout(() => {
                     if(progressBarFill) progressBarFill.style.width = finalPercent + '%';
@@ -215,10 +253,10 @@
                 progressBarBg.appendChild(progressBarFill);
 
                 const ballsWrapper = document.createElement('div');
-                ballsWrapper.className = 'flex items-center justify-between';
+                ballsWrapper.className = 'flex items-center justify-between mt-1';
 
                 const mainWrapper = document.createElement('div');
-                mainWrapper.className = 'flex gap-1';
+                mainWrapper.className = 'flex gap-1.5';
                 main.forEach(num => {
                     const ball = document.createElement('div');
                     ball.className = `lotto-ball ${getBallColor(num)}`;
@@ -229,7 +267,7 @@
                 const bonusWrapper = document.createElement('div');
                 bonusWrapper.className = 'flex items-center';
                 const plus = document.createElement('span');
-                plus.className = 'mx-1.5 font-bold text-slate-300 dark:text-slate-600';
+                plus.className = 'mx-2 font-bold text-slate-300 dark:text-slate-600';
                 plus.textContent = '+';
                 const bBall = document.createElement('div');
                 bBall.className = `lotto-ball ${getBallColor(bonus)}`;
