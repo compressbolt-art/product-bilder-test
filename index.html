@@ -75,25 +75,37 @@
         </section>
 
         <section class="card" style="border-radius: 2.5rem; margin-top: 2rem; padding: 2rem;">
+            <h2 style="font-size: 1.125rem; margin-bottom: 1.5rem; color: var(--indigo-500);">Troubleshooting Guide</h2>
+            <div style="font-size: 0.875rem; color: var(--text-slate-500); line-height: 1.6;">
+                <details style="margin-bottom: 1rem; cursor: pointer;">
+                    <summary style="font-weight: 700; color: var(--text-slate-700);">1. 댓글창이 로드되지 않나요?</summary>
+                    <p style="padding-top: 0.5rem;">Disqus 관리자 페이지에서 <strong>'productbilder-week2-7440-625f5.web.app'</strong> 도메인을 Trusted Domains에 추가해야 합니다.</p>
+                </details>
+                <details style="margin-bottom: 1rem; cursor: pointer;">
+                    <summary style="font-weight: 700; color: var(--text-slate-700);">2. 번호 생성 버튼이 작동하지 않나요?</summary>
+                    <p style="padding-top: 0.5rem;">기존 분석이 진행 중(2초)일 때는 중복 실행되지 않습니다. 로딩바가 사라진 후 다시 시도해 주세요.</p>
+                </details>
+                <details style="cursor: pointer;">
+                    <summary style="font-weight: 700; color: var(--text-slate-700);">3. GitHub 배포(Push) 오류가 발생하나요?</summary>
+                    <p style="padding-top: 0.5rem;">터미널에서 <code>git push origin main</code>을 입력하고 사용자 이름과 Personal Access Token을 입력해야 합니다.</p>
+                </details>
+            </div>
+        </section>
+
+        <section class="card" style="border-radius: 2.5rem; margin-top: 2rem; padding: 2rem;">
             <div id="disqus_thread"></div>
             <script>
-                /**
-                *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-                *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-                /*
                 var disqus_config = function () {
-                this.page.url = 'https://productbilder-week2-7440-625f5.web.app/';  // Replace PAGE_URL with your page's canonical URL variable
-                this.page.identifier = 'productbilder-week2'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                    this.page.url = 'https://productbilder-week2-7440-625f5.web.app/';
+                    this.page.identifier = 'productbilder-week2-main';
                 };
-                */
-                (function() { // DON'T EDIT BELOW THIS LINE
-                var d = document, s = d.createElement('script');
-                s.src = 'https://productbilder-week2-7440-625f5-web-app.disqus.com/embed.js';
-                s.setAttribute('data-timestamp', +new Date());
-                (d.head || d.body).appendChild(s);
+                (function() {
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://productbilder-week2-7440-625f5-web-app.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
                 })();
             </script>
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
         </section>
 
         <footer class="footer">
